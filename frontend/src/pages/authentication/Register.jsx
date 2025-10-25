@@ -11,7 +11,7 @@ const Register = () => {
     phone: '',
     password: '',
     confirmPassword: '',
-    accountType: 'organizer' // organizer, employee, or customer
+    accountType: 'admin' // admin or employee
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -52,14 +52,8 @@ const Register = () => {
         localStorage.setItem('user', JSON.stringify(userData))
         localStorage.setItem('token', userData.token)
 
-        // Redirect based on account type
-        if (formData.accountType === 'organizer') {
-          navigate('/organizer/dashboard')
-        } else if (formData.accountType === 'employee') {
-          navigate('/employee/invites') // Employees go to invites page first
-        } else {
-          navigate('/') // Regular customers go back to home
-        }
+        // Redirect to organization selection after registration
+        navigate('/select-organization')
       }, 1500)
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.')
@@ -139,14 +133,12 @@ const Register = () => {
                 onChange={(e) => setFormData({ ...formData, accountType: e.target.value })}
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
               >
-                <option value="organizer" className="bg-matte">Event Organizer / Seller</option>
-                <option value="employee" className="bg-matte">Employee / Ticket Scanner</option>
-                <option value="customer" className="bg-matte">Customer</option>
+                <option value="admin" className="bg-matte">Organization Admin</option>
+                <option value="employee" className="bg-matte">Employee</option>
               </select>
               <p className="text-xs text-graytext mt-2">
-                {formData.accountType === 'organizer' && 'Create and sell event tickets & merchandise'}
-                {formData.accountType === 'employee' && 'Scan tickets and manage entry'}
-                {formData.accountType === 'customer' && 'Purchase tickets and merchandise'}
+                {formData.accountType === 'admin' && 'Manage your organization, events, merchandise, and team members'}
+                {formData.accountType === 'employee' && 'Join an organization team with invited access'}
               </p>
             </div>
 

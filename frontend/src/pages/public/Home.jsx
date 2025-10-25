@@ -53,6 +53,41 @@ const Home = () => {
     }
   ]
 
+  const featuredMerchandise = [
+    {
+      id: 1,
+      name: 'CEO Bazaar T-Shirt',
+      category: 'Apparel',
+      price: 50000,
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800',
+      organization: 'CEO Bazaar Events'
+    },
+    {
+      id: 2,
+      name: 'VIP Event Lanyard',
+      category: 'Accessories',
+      price: 15000,
+      image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800',
+      organization: 'Downtown Concerts'
+    },
+    {
+      id: 3,
+      name: 'Limited Edition Poster',
+      category: 'Prints',
+      price: 25000,
+      image: 'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=800',
+      organization: 'Art Gallery UG'
+    },
+    {
+      id: 4,
+      name: 'Branded Water Bottle',
+      category: 'Accessories',
+      price: 35000,
+      image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800',
+      organization: 'Sports Arena LLC'
+    }
+  ]
+
   return (
     <div className="pt-16">
       {/* Hero Section */}
@@ -164,6 +199,54 @@ const Home = () => {
                     <span>•</span>
                     <span>{event.location}</span>
                   </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Merchandise Section */}
+      <section id="merchandise" className="py-20 bg-matte/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="font-clash font-bold text-4xl">
+              Shop <span className="text-gold">Merchandise</span>
+            </h2>
+            <Link to="/merchandise" className="text-gold hover:text-gold/80 transition-colors">
+              View All →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredMerchandise.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group"
+              >
+                <Link to={`/merchandise/${item.id}`} className="block">
+                  <div className="relative overflow-hidden rounded-lg mb-4 bg-white/5">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4 bg-gold text-black px-3 py-1 rounded-md font-semibold text-sm">
+                      UGX {item.price.toLocaleString()}
+                    </div>
+                    <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-md text-xs">
+                      {item.category}
+                    </div>
+                  </div>
+                  <h3 className="font-semibold text-lg mb-1 group-hover:text-gold transition-colors">
+                    {item.name}
+                  </h3>
+                  <p className="text-graytext text-sm">
+                    by {item.organization}
+                  </p>
                 </Link>
               </motion.div>
             ))}

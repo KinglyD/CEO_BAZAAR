@@ -1,9 +1,23 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const scrollToSection = (sectionId) => {
+    if (location.pathname !== '/') {
+      navigate('/')
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    } else {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' })
+    }
+    setMobileMenuOpen(false)
+  }
 
   return (
     <nav className="fixed w-full z-50 bg-matte/95 backdrop-blur-sm border-b border-white/10">
@@ -15,12 +29,18 @@ const Navbar = () => {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-            <Link to="/#events" className="text-graytext hover:text-white transition-colors">
+            <button 
+              onClick={() => scrollToSection('events')}
+              className="text-graytext hover:text-white transition-colors cursor-pointer"
+            >
               Events
-            </Link>
-            <Link to="/#merchandise" className="text-graytext hover:text-white transition-colors">
+            </button>
+            <button 
+              onClick={() => scrollToSection('merchandise')}
+              className="text-graytext hover:text-white transition-colors cursor-pointer"
+            >
               Merchandise
-            </Link>
+            </button>
             <Link to="/register" className="text-graytext hover:text-white transition-colors">
               Sell with Us
             </Link>
@@ -52,20 +72,18 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden pb-4 space-y-2 animate-fade-in">
-            <Link
-              to="/#events"
-              className="block px-4 py-2 text-graytext hover:text-white transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
+            <button
+              onClick={() => scrollToSection('events')}
+              className="block w-full text-left px-4 py-2 text-graytext hover:text-white transition-colors"
             >
               Events
-            </Link>
-            <Link
-              to="/#merchandise"
-              className="block px-4 py-2 text-graytext hover:text-white transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
+            </button>
+            <button
+              onClick={() => scrollToSection('merchandise')}
+              className="block w-full text-left px-4 py-2 text-graytext hover:text-white transition-colors"
             >
               Merchandise
-            </Link>
+            </button>
             <Link
               to="/register"
               className="block px-4 py-2 text-graytext hover:text-white transition-colors"

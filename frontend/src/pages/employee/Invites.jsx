@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { 
   EnvelopeIcon, 
   CheckCircleIcon, 
   XCircleIcon,
   CalendarIcon,
-  UserGroupIcon 
+  UserGroupIcon,
+  SparklesIcon
 } from '@heroicons/react/24/outline'
 
 const Invites = () => {
   const navigate = useNavigate()
   const [invites, setInvites] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [processingInvite, setProcessingInvite] = useState(null)
 
   useEffect(() => {
     fetchInvites()
@@ -52,9 +55,12 @@ const Invites = () => {
   }
 
   const handleAccept = async (inviteId) => {
+    setProcessingInvite(inviteId)
     try {
       // TODO: Replace with actual API call
       // await axios.post(`/api/employee/invites/${inviteId}/accept`)
+      
+      const invite = invites.find(inv => inv.id === inviteId)
       
       // Simulate API call
       setTimeout(() => {
@@ -63,32 +69,38 @@ const Invites = () => {
           inv.id === inviteId ? { ...inv, status: 'accepted' } : inv
         ))
         
-        // Show success message
-        alert('Invite accepted! You can now access events from this organizer.')
+        setProcessingInvite(null)
+        toast.success(`Welcome to ${invite.organizerName}'s team! 🎉`)
         
         // Redirect to dashboard after accepting
-        setTimeout(() => navigate('/employee/dashboard'), 1500)
-      }, 500)
+        setTimeout(() => navigate('/employee/dashboard'), 2000)
+      }, 1000)
     } catch (error) {
       console.error('Failed to accept invite:', error)
-      alert('Failed to accept invite. Please try again.')
+      setProcessingInvite(null)
+      toast.error('Failed to accept invite. Please try again.')
     }
   }
 
   const handleDecline = async (inviteId) => {
+    setProcessingInvite(inviteId)
     try {
       // TODO: Replace with actual API call
       // await axios.post(`/api/employee/invites/${inviteId}/decline`)
+      
+      const invite = invites.find(inv => inv.id === inviteId)
       
       // Simulate API call
       setTimeout(() => {
         // Remove declined invite from list
         setInvites(invites.filter(inv => inv.id !== inviteId))
-        alert('Invite declined.')
+        setProcessingInvite(null)
+        toast.success(`Declined invite from ${invite.organizerName}`)
       }, 500)
     } catch (error) {
       console.error('Failed to decline invite:', error)
-      alert('Failed to decline invite. Please try again.')
+      setProcessingInvite(null)
+      toast.error('Failed to decline invite. Please try again.')
     }
   }
 
@@ -183,17 +195,19 @@ const Invites = () => {
                     <div className="flex gap-3 ml-4">
                       <button
                         onClick={() => handleAccept(invite.id)}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-400 border border-green-500/50 rounded-md hover:bg-green-500/30 transition-colors"
+                        disabled={processingInvite === invite.id}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-400 border border-green-500/50 rounded-md hover:bg-green-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <CheckCircleIcon className="h-5 w-5" />
-                        Accept
+                        {processingInvite === invite.id ? 'Accepting...' : 'Accept'}
                       </button>
                       <button
                         onClick={() => handleDecline(invite.id)}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded-md hover:bg-red-500/30 transition-colors"
+                        disabled={processingInvite === invite.id}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded-md hover:bg-red-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <XCircleIcon className="h-5 w-5" />
-                        Decline
+                        {processingInvite === invite.id ? 'Declining...' : 'Decline'}
                       </button>
                     </div>
                   )}

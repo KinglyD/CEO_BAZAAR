@@ -28,23 +28,14 @@ const Login = () => {
           id: Date.now(),
           email: formData.email,
           fullName: 'John Doe',
-          role: 'organizer', // This would come from the API response
           token: 'mock-jwt-token-' + Date.now()
         }
         
         localStorage.setItem('user', JSON.stringify(userData))
         localStorage.setItem('token', userData.token)
 
-        // Redirect based on role
-        if (userData.role === 'organizer') {
-          navigate('/organizer/dashboard')
-        } else if (userData.role === 'employee') {
-          navigate('/employee/dashboard')
-        } else if (userData.role === 'admin') {
-          navigate('/admin/dashboard')
-        } else {
-          navigate('/') // Regular customers go to home
-        }
+        // Redirect to organization selection
+        navigate('/select-organization')
       }, 1500)
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.')

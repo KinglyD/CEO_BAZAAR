@@ -5,21 +5,31 @@ import {
   CalendarIcon, 
   BanknotesIcon,
   Cog6ToothIcon,
-  ArrowRightOnRectangleIcon 
+  ArrowRightOnRectangleIcon,
+  ShoppingBagIcon,
+  EnvelopeIcon,
+  PlusCircleIcon
 } from '@heroicons/react/24/outline'
 import Dashboard from './Dashboard'
 import ManageUsers from './ManageUsers'
 import ManageEvents from './ManageEvents'
+import EventDetails from './EventDetails'
 import Transactions from './Transactions'
 import Settings from './Settings'
+import Merchandise from './Merchandise'
+import CreateEvent from './CreateEvent'
+import EventInvitations from './EventInvitations'
 
 const AdminLayout = () => {
   const location = useLocation()
 
   const navigation = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: HomeIcon },
-    { name: 'Users', path: '/admin/users', icon: UsersIcon },
+    { name: 'Create Event', path: '/admin/create-event', icon: PlusCircleIcon },
     { name: 'Events', path: '/admin/events', icon: CalendarIcon },
+    { name: 'Invitations', path: '/admin/invitations', icon: EnvelopeIcon },
+    { name: 'Users', path: '/admin/users', icon: UsersIcon },
+    { name: 'Merchandise', path: '/admin/merchandise', icon: ShoppingBagIcon },
     { name: 'Transactions', path: '/admin/transactions', icon: BanknotesIcon },
     { name: 'Settings', path: '/admin/settings', icon: Cog6ToothIcon },
   ]
@@ -68,8 +78,12 @@ const AdminLayout = () => {
         <main className="ml-64 flex-1 p-8">
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="users" element={<ManageUsers />} />
+            <Route path="create-event" element={<CreateEvent />} />
             <Route path="events" element={<ManageEvents />} />
+            <Route path="events/:eventId" element={<EventDetails />} />
+            <Route path="invitations" element={<EventInvitations />} />
+            <Route path="users" element={<ManageUsers />} />
+            <Route path="merchandise" element={<Merchandise />} />
             <Route path="transactions" element={<Transactions />} />
             <Route path="settings" element={<Settings />} />
           </Routes>

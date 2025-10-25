@@ -1,379 +1,523 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import {
+  Cog6ToothIcon,
+  CreditCardIcon,
+  EnvelopeIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
+} from '@heroicons/react/24/outline'
+import toast from 'react-hot-toast'
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('general')
-  const [formData, setFormData] = useState({
-    siteName: 'CEO Bazaar',
-    siteEmail: 'admin@ceobazaar.com',
-    commission: '10',
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [generalSettings, setGeneralSettings] = useState({
+    platformName: 'CEO Bazaar',
+    platformEmail: 'support@ceobazaar.com',
+    platformPhone: '0700000000',
     currency: 'UGX',
-    minPayout: '100000',
-    enableRegistration: true,
-    requireApproval: true,
-    enableNotifications: true
+    timezone: 'Africa/Kampala',
+    maintenanceMode: false,
   })
 
-  const handleSave = (e) => {
-    e.preventDefault()
-    alert('Settings saved successfully!')
+  const [paymentSettings, setPaymentSettings] = useState({
+    platformFeePercent: 6.5,
+    mobileMoney: {
+      enabled: true,
+      provider: 'MTN/Airtel',
+      apiKey: '••••••••••••',
+    },
+    bankTransfer: {
+      enabled: true,
+      accountName: 'CEO Bazaar Ltd',
+      accountNumber: '••••••••',
+      bankName: 'Stanbic Bank',
+    },
+    paymentGateway: {
+      enabled: false,
+      provider: 'Flutterwave',
+      publicKey: '••••••••••••',
+      secretKey: '••••••••••••',
+    },
+  })
+
+  const [emailSettings, setEmailSettings] = useState({
+    smtpHost: 'smtp.ceobazaar.com',
+    smtpPort: '587',
+    smtpUser: 'noreply@ceobazaar.com',
+    smtpPassword: '••••••••',
+    smsProvider: 'Africa\'s Talking',
+    smsApiKey: '••••••••••••',
+  })
+
+  const [securitySettings, setSecuritySettings] = useState({
+    twoFactorAuth: true,
+    sessionTimeout: '30',
+    passwordExpiry: '90',
+    loginAttempts: '5',
+  })
+
+  const [aiSettings, setAISettings] = useState({
+    enabled: true,
+    provider: 'OpenAI',
+    apiKey: '••••••••••••',
+    model: 'gpt-4',
+    maxTokens: '2000',
+  })
+
+  const tabs = [
+    { id: 'general', name: 'General', icon: Cog6ToothIcon },
+    { id: 'payment', name: 'Payment', icon: CreditCardIcon },
+    { id: 'email', name: 'Email & SMS', icon: EnvelopeIcon },
+    { id: 'security', name: 'Security', icon: ShieldCheckIcon },
+    { id: 'ai', name: 'AI Configuration', icon: SparklesIcon },
+  ]
+
+  const handleSaveSettings = () => {
+    setIsLoading(true)
+    setTimeout(() => {
+      toast.success('Settings saved successfully')
+      setIsLoading(false)
+    }, 1000)
   }
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="font-clash font-bold text-4xl mb-2">Platform Settings</h1>
-        <p className="text-graytext">Manage platform configuration</p>
+        <p className="text-graytext">Configure platform-wide settings and integrations</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Tabs */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-1"
-        >
-          <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-            <nav className="space-y-2">
-              <button
-                onClick={() => setActiveTab('general')}
-                className={`w-full text-left px-4 py-3 rounded-md transition-colors ${
-                  activeTab === 'general'
-                    ? 'bg-gold text-black font-semibold'
-                    : 'text-graytext hover:text-white hover:bg-white/5'
-                }`}
-              >
-                General
-              </button>
-              <button
-                onClick={() => setActiveTab('payment')}
-                className={`w-full text-left px-4 py-3 rounded-md transition-colors ${
-                  activeTab === 'payment'
-                    ? 'bg-gold text-black font-semibold'
-                    : 'text-graytext hover:text-white hover:bg-white/5'
-                }`}
-              >
-                Payment
-              </button>
-              <button
-                onClick={() => setActiveTab('notifications')}
-                className={`w-full text-left px-4 py-3 rounded-md transition-colors ${
-                  activeTab === 'notifications'
-                    ? 'bg-gold text-black font-semibold'
-                    : 'text-graytext hover:text-white hover:bg-white/5'
-                }`}
-              >
-                Notifications
-              </button>
-              <button
-                onClick={() => setActiveTab('security')}
-                className={`w-full text-left px-4 py-3 rounded-md transition-colors ${
-                  activeTab === 'security'
-                    ? 'bg-gold text-black font-semibold'
-                    : 'text-graytext hover:text-white hover:bg-white/5'
-                }`}
-              >
-                Security
-              </button>
-            </nav>
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        {tabs.map((tab) => {
+          const Icon = tab.icon
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                activeTab === tab.id
+                  ? 'bg-gold text-black'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+              {tab.name}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Tab Content */}
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-6"
+      >
+        {/* General Settings */}
+        {activeTab === 'general' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">Platform Name</label>
+                <input
+                  type="text"
+                  value={generalSettings.platformName}
+                  onChange={(e) => setGeneralSettings({...generalSettings, platformName: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Support Email</label>
+                <input
+                  type="email"
+                  value={generalSettings.platformEmail}
+                  onChange={(e) => setGeneralSettings({...generalSettings, platformEmail: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Support Phone</label>
+                <input
+                  type="tel"
+                  value={generalSettings.platformPhone}
+                  onChange={(e) => setGeneralSettings({...generalSettings, platformPhone: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Currency</label>
+                <select
+                  value={generalSettings.currency}
+                  onChange={(e) => setGeneralSettings({...generalSettings, currency: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                >
+                  <option value="UGX">UGX - Ugandan Shilling</option>
+                  <option value="KES">KES - Kenyan Shilling</option>
+                  <option value="TZS">TZS - Tanzanian Shilling</option>
+                  <option value="RWF">RWF - Rwandan Franc</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Timezone</label>
+                <select
+                  value={generalSettings.timezone}
+                  onChange={(e) => setGeneralSettings({...generalSettings, timezone: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                >
+                  <option value="Africa/Kampala">Africa/Kampala (EAT)</option>
+                  <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
+                  <option value="Africa/Kigali">Africa/Kigali (CAT)</option>
+                </select>
+              </div>
+              <div>
+                <label className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={generalSettings.maintenanceMode}
+                    onChange={(e) => setGeneralSettings({...generalSettings, maintenanceMode: e.target.checked})}
+                    className="w-5 h-5 rounded border-white/20 bg-white/5 text-gold focus:ring-gold focus:ring-offset-0"
+                  />
+                  <span className="text-sm font-medium">Maintenance Mode</span>
+                </label>
+                <p className="text-xs text-graytext mt-1 ml-8">
+                  Enable to show maintenance page to all users
+                </p>
+              </div>
+            </div>
           </div>
-        </motion.div>
+        )}
 
-        {/* Content */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-3"
-        >
-          <div className="bg-white/5 backdrop-blur-sm rounded-lg p-8 border border-white/10">
-            {/* General Tab */}
-            {activeTab === 'general' && (
-              <form onSubmit={handleSave} className="space-y-6">
-                <h2 className="font-clash text-2xl font-bold mb-6">General Settings</h2>
+        {/* Payment Settings */}
+        {activeTab === 'payment' && (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium mb-2">Platform Fee (%)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={paymentSettings.platformFeePercent}
+                onChange={(e) => setPaymentSettings({...paymentSettings, platformFeePercent: parseFloat(e.target.value)})}
+                className="w-full md:w-1/3 bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+              />
+              <p className="text-xs text-graytext mt-1">
+                Fee charged on each ticket sale
+              </p>
+            </div>
 
+            <div className="border-t border-white/10 pt-6">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Site Name</label>
+                  <h3 className="font-semibold text-lg">Mobile Money</h3>
+                  <p className="text-sm text-graytext">MTN & Airtel Money integration</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={paymentSettings.mobileMoney.enabled}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      mobileMoney: {...paymentSettings.mobileMoney, enabled: e.target.checked}
+                    })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gold rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold"></div>
+                </label>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Provider</label>
                   <input
                     type="text"
-                    value={formData.siteName}
-                    onChange={(e) => setFormData({ ...formData, siteName: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
+                    value={paymentSettings.mobileMoney.provider}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      mobileMoney: {...paymentSettings.mobileMoney, provider: e.target.value}
+                    })}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium mb-2">Admin Email</label>
+                  <label className="block text-sm font-medium mb-2">API Key</label>
+                  <input
+                    type="password"
+                    value={paymentSettings.mobileMoney.apiKey}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      mobileMoney: {...paymentSettings.mobileMoney, apiKey: e.target.value}
+                    })}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-lg">Bank Transfer</h3>
+                  <p className="text-sm text-graytext">Direct bank account deposits</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={paymentSettings.bankTransfer.enabled}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      bankTransfer: {...paymentSettings.bankTransfer, enabled: e.target.checked}
+                    })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gold rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold"></div>
+                </label>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Account Name</label>
+                  <input
+                    type="text"
+                    value={paymentSettings.bankTransfer.accountName}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      bankTransfer: {...paymentSettings.bankTransfer, accountName: e.target.value}
+                    })}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Account Number</label>
+                  <input
+                    type="text"
+                    value={paymentSettings.bankTransfer.accountNumber}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      bankTransfer: {...paymentSettings.bankTransfer, accountNumber: e.target.value}
+                    })}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Bank Name</label>
+                  <input
+                    type="text"
+                    value={paymentSettings.bankTransfer.bankName}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      bankTransfer: {...paymentSettings.bankTransfer, bankName: e.target.value}
+                    })}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Email & SMS Settings */}
+        {activeTab === 'email' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-lg mb-4">SMTP Configuration</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">SMTP Host</label>
+                  <input
+                    type="text"
+                    value={emailSettings.smtpHost}
+                    onChange={(e) => setEmailSettings({...emailSettings, smtpHost: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">SMTP Port</label>
+                  <input
+                    type="text"
+                    value={emailSettings.smtpPort}
+                    onChange={(e) => setEmailSettings({...emailSettings, smtpPort: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">SMTP User</label>
                   <input
                     type="email"
-                    value={formData.siteEmail}
-                    onChange={(e) => setFormData({ ...formData, siteEmail: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
+                    value={emailSettings.smtpUser}
+                    onChange={(e) => setEmailSettings({...emailSettings, smtpUser: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium mb-2">Currency</label>
+                  <label className="block text-sm font-medium mb-2">SMTP Password</label>
+                  <input
+                    type="password"
+                    value={emailSettings.smtpPassword}
+                    onChange={(e) => setEmailSettings({...emailSettings, smtpPassword: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-6">
+              <h3 className="font-semibold text-lg mb-4">SMS Configuration</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">SMS Provider</label>
                   <select
-                    value={formData.currency}
-                    onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
+                    value={emailSettings.smsProvider}
+                    onChange={(e) => setEmailSettings({...emailSettings, smsProvider: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
                   >
-                    <option value="UGX">UGX - Ugandan Shilling</option>
-                    <option value="USD">USD - US Dollar</option>
-                    <option value="EUR">EUR - Euro</option>
+                    <option value="Africa's Talking">Africa's Talking</option>
+                    <option value="Twilio">Twilio</option>
+                    <option value="Nexmo">Nexmo</option>
                   </select>
                 </div>
-
-                <div className="space-y-4">
-                  <label className="flex items-center gap-3 p-4 bg-white/5 rounded-md cursor-pointer hover:bg-white/10 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={formData.enableRegistration}
-                      onChange={(e) => setFormData({ ...formData, enableRegistration: e.target.checked })}
-                      className="rounded"
-                    />
-                    <div>
-                      <p className="font-medium">Enable User Registration</p>
-                      <p className="text-sm text-graytext">Allow new users to register on the platform</p>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center gap-3 p-4 bg-white/5 rounded-md cursor-pointer hover:bg-white/10 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={formData.requireApproval}
-                      onChange={(e) => setFormData({ ...formData, requireApproval: e.target.checked })}
-                      className="rounded"
-                    />
-                    <div>
-                      <p className="font-medium">Require Event Approval</p>
-                      <p className="text-sm text-graytext">Events must be approved before going live</p>
-                    </div>
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-gold text-black font-semibold rounded-md hover:bg-gold/90 transition-colors"
-                >
-                  Save Changes
-                </button>
-              </form>
-            )}
-
-            {/* Payment Tab */}
-            {activeTab === 'payment' && (
-              <form onSubmit={handleSave} className="space-y-6">
-                <h2 className="font-clash text-2xl font-bold mb-6">Payment Settings</h2>
-
                 <div>
-                  <label className="block text-sm font-medium mb-2">Platform Commission (%)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={formData.commission}
-                    onChange={(e) => setFormData({ ...formData, commission: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
-                  />
-                  <p className="text-sm text-graytext mt-2">
-                    Platform commission on each transaction
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Minimum Payout Amount (UGX)</label>
-                  <input
-                    type="number"
-                    value={formData.minPayout}
-                    onChange={(e) => setFormData({ ...formData, minPayout: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
-                  />
-                  <p className="text-sm text-graytext mt-2">
-                    Minimum amount required for organizer payouts
-                  </p>
-                </div>
-
-                <div className="p-4 bg-blue-400/10 border border-blue-400/20 rounded-lg">
-                  <h3 className="font-semibold text-blue-400 mb-2">Payment Gateway Integration</h3>
-                  <p className="text-sm text-graytext mb-4">
-                    Configure your payment gateway credentials
-                  </p>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">MTN Mobile Money API Key</label>
-                      <input
-                        type="password"
-                        placeholder="••••••••••••••••"
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Airtel Money API Key</label>
-                      <input
-                        type="password"
-                        placeholder="••••••••••••••••"
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-gold text-black font-semibold rounded-md hover:bg-gold/90 transition-colors"
-                >
-                  Save Changes
-                </button>
-              </form>
-            )}
-
-            {/* Notifications Tab */}
-            {activeTab === 'notifications' && (
-              <form onSubmit={handleSave} className="space-y-6">
-                <h2 className="font-clash text-2xl font-bold mb-6">Notification Settings</h2>
-
-                <div className="space-y-4">
-                  <label className="flex items-center gap-3 p-4 bg-white/5 rounded-md cursor-pointer hover:bg-white/10 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={formData.enableNotifications}
-                      onChange={(e) => setFormData({ ...formData, enableNotifications: e.target.checked })}
-                      className="rounded"
-                    />
-                    <div>
-                      <p className="font-medium">Enable Email Notifications</p>
-                      <p className="text-sm text-graytext">Send email notifications to users</p>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center gap-3 p-4 bg-white/5 rounded-md cursor-pointer hover:bg-white/10 transition-colors">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="rounded"
-                    />
-                    <div>
-                      <p className="font-medium">New User Registration</p>
-                      <p className="text-sm text-graytext">Notify admin when new users register</p>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center gap-3 p-4 bg-white/5 rounded-md cursor-pointer hover:bg-white/10 transition-colors">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="rounded"
-                    />
-                    <div>
-                      <p className="font-medium">New Event Created</p>
-                      <p className="text-sm text-graytext">Notify admin when events are created</p>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center gap-3 p-4 bg-white/5 rounded-md cursor-pointer hover:bg-white/10 transition-colors">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="rounded"
-                    />
-                    <div>
-                      <p className="font-medium">Transaction Alerts</p>
-                      <p className="text-sm text-graytext">Notify admin of high-value transactions</p>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center gap-3 p-4 bg-white/5 rounded-md cursor-pointer hover:bg-white/10 transition-colors">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="rounded"
-                    />
-                    <div>
-                      <p className="font-medium">Payout Requests</p>
-                      <p className="text-sm text-graytext">Notify admin of payout requests</p>
-                    </div>
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-gold text-black font-semibold rounded-md hover:bg-gold/90 transition-colors"
-                >
-                  Save Changes
-                </button>
-              </form>
-            )}
-
-            {/* Security Tab */}
-            {activeTab === 'security' && (
-              <form onSubmit={handleSave} className="space-y-6">
-                <h2 className="font-clash text-2xl font-bold mb-6">Security Settings</h2>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Current Password</label>
+                  <label className="block text-sm font-medium mb-2">API Key</label>
                   <input
                     type="password"
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
-                    placeholder="••••••••"
+                    value={emailSettings.smsApiKey}
+                    onChange={(e) => setEmailSettings({...emailSettings, smsApiKey: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">New Password</label>
-                  <input
-                    type="password"
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
-                    placeholder="••••••••"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Confirm New Password</label>
-                  <input
-                    type="password"
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-md focus:outline-none focus:border-gold transition-colors"
-                    placeholder="••••••••"
-                  />
-                </div>
-
-                <div className="border-t border-white/10 pt-6">
-                  <h3 className="font-semibold mb-4">Two-Factor Authentication</h3>
-                  <p className="text-sm text-graytext mb-4">
-                    Add an extra layer of security to your account
-                  </p>
-                  <button
-                    type="button"
-                    className="px-6 py-2 border-2 border-gold text-gold font-semibold rounded-md hover:bg-gold hover:text-black transition-colors"
-                  >
-                    Enable 2FA
-                  </button>
-                </div>
-
-                <div className="border-t border-white/10 pt-6">
-                  <h3 className="font-semibold text-red-400 mb-4">Danger Zone</h3>
-                  <p className="text-sm text-graytext mb-4">
-                    These actions are irreversible. Please be certain.
-                  </p>
-                  <button
-                    type="button"
-                    className="px-6 py-2 bg-red-500/20 border-2 border-red-500 text-red-400 font-semibold rounded-md hover:bg-red-500/30 transition-colors"
-                  >
-                    Clear All Data
-                  </button>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-gold text-black font-semibold rounded-md hover:bg-gold/90 transition-colors"
-                >
-                  Update Password
-                </button>
-              </form>
-            )}
+              </div>
+            </div>
           </div>
-        </motion.div>
-      </div>
+        )}
+
+        {/* Security Settings */}
+        {activeTab === 'security' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={securitySettings.twoFactorAuth}
+                    onChange={(e) => setSecuritySettings({...securitySettings, twoFactorAuth: e.target.checked})}
+                    className="w-5 h-5 rounded border-white/20 bg-white/5 text-gold focus:ring-gold focus:ring-offset-0"
+                  />
+                  <span className="text-sm font-medium">Require Two-Factor Authentication</span>
+                </label>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Session Timeout (minutes)</label>
+                <input
+                  type="number"
+                  value={securitySettings.sessionTimeout}
+                  onChange={(e) => setSecuritySettings({...securitySettings, sessionTimeout: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Password Expiry (days)</label>
+                <input
+                  type="number"
+                  value={securitySettings.passwordExpiry}
+                  onChange={(e) => setSecuritySettings({...securitySettings, passwordExpiry: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Max Login Attempts</label>
+                <input
+                  type="number"
+                  value={securitySettings.loginAttempts}
+                  onChange={(e) => setSecuritySettings({...securitySettings, loginAttempts: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* AI Settings */}
+        {activeTab === 'ai' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold text-lg">AI Marketing Suite</h3>
+                <p className="text-sm text-graytext">Enable AI-powered marketing features</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={aiSettings.enabled}
+                  onChange={(e) => setAISettings({...aiSettings, enabled: e.target.checked})}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gold rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold"></div>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">AI Provider</label>
+                <select
+                  value={aiSettings.provider}
+                  onChange={(e) => setAISettings({...aiSettings, provider: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  disabled={!aiSettings.enabled}
+                >
+                  <option value="OpenAI">OpenAI</option>
+                  <option value="Anthropic">Anthropic</option>
+                  <option value="Google">Google AI</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Model</label>
+                <select
+                  value={aiSettings.model}
+                  onChange={(e) => setAISettings({...aiSettings, model: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  disabled={!aiSettings.enabled}
+                >
+                  <option value="gpt-4">GPT-4</option>
+                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                  <option value="claude-3">Claude 3</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">API Key</label>
+                <input
+                  type="password"
+                  value={aiSettings.apiKey}
+                  onChange={(e) => setAISettings({...aiSettings, apiKey: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  disabled={!aiSettings.enabled}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Max Tokens</label>
+                <input
+                  type="number"
+                  value={aiSettings.maxTokens}
+                  onChange={(e) => setAISettings({...aiSettings, maxTokens: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold"
+                  disabled={!aiSettings.enabled}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Save Button */}
+        <div className="flex justify-end pt-6 border-t border-white/10 mt-6">
+          <button
+            onClick={handleSaveSettings}
+            disabled={isLoading}
+            className="bg-gold hover:bg-gold/90 text-black px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </motion.div>
     </div>
   )
 }
